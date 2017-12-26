@@ -4,12 +4,14 @@ const scheme = require('./scheme');
 
 const Op = Sequelize.Op;
 
-const sequelize = new Sequelize(null, null, {
+const DB_NAME = 'meeting-rooms';
+const DB_USER = 'admin';
+const DB_PASSWORD = 'password';
+
+const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   dialect: 'sqlite',
   storage: 'db.sqlite3',
-
-operatorsAliases: { $and: Op.and },
-
+  operatorsAliases: { $and: Op.and },
   logging: false
 });
 
