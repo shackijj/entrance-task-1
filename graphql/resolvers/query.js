@@ -1,5 +1,3 @@
-const { models } = require('../../models');
-
 module.exports = {
 event (root, { id }) {
     return models.Event.findById(id);

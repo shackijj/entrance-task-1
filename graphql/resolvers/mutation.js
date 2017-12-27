@@ -1,9 +1,7 @@
-const { models } = require('../../models');
-
 module.exports = {
   // User
-  createUser (root, { input }, context) {
-    return models.User.create(input);
+  createUser(root, { input }, {sequelize: {User}}) {
+    return User.create(input);
   },
 
   updateUser (root, { id, input }, context) {
