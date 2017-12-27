@@ -12,8 +12,12 @@ module.exports = () => {
         operatorsAliases: { $and: Sequelize.Op.and },
         logging: false
     });
-    return sequelize.sync().then(() => ({
-        scheme: scheme(sequelize),
-        sequelize
-    }));
+
+    scheme(sequelize);
+
+    return sequelize.sync().then(() => {
+        return Promise.resolve(sequelize);
+    }, (err) => {
+        console.log('Sync error', err);
+    });
 };

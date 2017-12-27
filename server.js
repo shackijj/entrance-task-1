@@ -14,8 +14,8 @@ const request = require('request-promise');
 const PORT = 3000;
 
 function start() {
-    return connectSequelize().then(({scheme, sequelize}) => {
-        const executableSchema = makeExecutableSchema({
+    return connectSequelize().then(sequelize => {
+        const schema = makeExecutableSchema({
             typeDefs,
             resolvers: resolvers()
         });
@@ -24,10 +24,10 @@ function start() {
     
         app.use(bodyParser.json());
         app.use('/graphql', graphqlHTTP({
-            schema: executableSchema,
+            schema,
             graphiql: true,
             context: {
-                sequelize: scheme,
+                sequelize: sequelize.models,
             }
         }));
       

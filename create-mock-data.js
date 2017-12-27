@@ -1,6 +1,6 @@
-const { models, sequelize } = require('./models');
+const connectSequelize = require('./sequelize-connector');
 
-function createData () {
+function createData ({models}) {
   let usersPromise = models.User.bulkCreate([
     {
       login: 'veged',
@@ -91,5 +91,5 @@ function createData () {
     });
 }
 
-sequelize.sync()
+connectSequelize()
   .then(createData);
