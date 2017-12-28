@@ -25,3 +25,7 @@ npm run dev
 ```
 npm run reset-db
 ```
+
+TODO:
+- Logins must be unique
+- Add avatarUrl to UserInput type
