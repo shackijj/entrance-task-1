@@ -1,20 +1,20 @@
 module.exports = {
-  event (root, { id }) {
-    return models.Event.findById(id)
+  event (root, { id }, {sequelize: {Event}}) {
+    return Event.findById(id)
   },
-  events (root, args, context) {
-    return models.Event.findAll(argumets, context)
+  events (root, args, {sequelize: {Event}}) {
+    return Event.findAll(args)
   },
-  user (root, { id }) {
-    return models.User.findById(id)
+  user (root, { id }, {sequelize: {User}}) {
+    return User.findById(id)
   },
-  users (root, args, context) {
-    return models.User.findAll({}, context)
+  users (root, args, {sequelize: {User}}) {
+    return User.findAll({})
   },
-  room (root, { id }) {
-    return models.Room.findById(id)
+  room (root, { id }, {sequelize: {Room}}) {
+    return Room.findById(id)
   },
-  rooms (root, args, context) {
-    return models.Room.findAll({ offset: 1 }, context)
+  rooms (root, args, {sequelize: {Room}}) {
+    return Room.findAll({ offset: 1 })
   }
 }

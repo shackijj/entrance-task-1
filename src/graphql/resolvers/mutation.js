@@ -4,38 +4,38 @@ module.exports = {
     return User.create(input)
   },
 
-  updateUser (root, { id, input }, context) {
-    return models.User.findById(id)
+  updateUser (root, { id, input }, {sequelize: {User}}) {
+    return User.findById(id)
       .then(user => {
         return user.update(input)
       })
   },
 
-  removeUser (root, { id }, context) {
-    return models.User.findById(id)
+  removeUser (root, { id }, {sequelize: {User}}) {
+    return User.findById(id)
       .then(user => user.destroy())
   },
 
   // Room
-  createRoom (root, { input }, context) {
-    return models.Room.create(input)
+  createRoom (root, { input }, {sequelize: {Room}}) {
+    return Room.create(input)
   },
 
-  updateRoom (root, { id, input }, context) {
-    return models.Room.findById(id)
+  updateRoom (root, { id, input }, {sequelize: {Room}}) {
+    return Room.findById(id)
       .then(room => {
         return room.update(input)
       })
   },
 
-  removeRoom (root, { id }, context) {
-    return models.Room.findById(id)
+  removeRoom (root, { id }, {sequelize: {Room}}) {
+    return Room.findById(id)
       .then(room => room.destroy())
   },
 
   // Event
-  createEvent (root, { input, usersIds, roomId }, context) {
-    return models.Event.create(input)
+  createEvent (root, { input, usersIds, roomId }, {sequelize: {Event}}) {
+    return Event.create(input)
       .then(event => {
         event.setRoom(roomId)
 
@@ -44,30 +44,30 @@ module.exports = {
       })
   },
 
-  updateEvent (root, { id, input }, context) {
-    return models.Event.findById(id)
+  updateEvent (root, { id, input }, {sequelize: {Event}}) {
+    return Event.findById(id)
       .then(event => {
         return event.update(input)
       })
   },
 
-  removeUserFromEvent (root, { id, userId }, context) {
-    return models.Event.findById(id)
+  removeUserFromEvent (root, { id, userId }, {sequelize: {Event}}) {
+    return Event.findById(id)
       .then(event => {
         event.removeUser(userId)
         return event
       })
   },
 
-  changeEventRoom (root, { id, roomId }, context) {
-    return models.Event.findById(id)
+  changeEventRoom (root, { id, roomId }, {sequelize: {Event}}) {
+    return Event.findById(id)
       .then(event => {
         event.setRoom(id)
       })
   },
 
-  removeEvent (root, { id }, context) {
-    return models.Event.findById(id)
+  removeEvent (root, { id }, {sequelize: {Event}}) {
+    return Event.findById(id)
       .then(event => event.destroy())
   }
 }
