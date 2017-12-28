@@ -1,4 +1,4 @@
-const connectSequelize = require('./sequelize-connector');
+const connectSequelize = require('./sequelize-connector')
 
 function createData ({models}) {
   let usersPromise = models.User.bulkCreate([
@@ -17,7 +17,7 @@ function createData ({models}) {
       avatarUrl: 'https://avatars0.githubusercontent.com/u/1813468?s=460&v=4',
       homeFloor: 2
     }
-  ]);
+  ])
 
   let roomsPromise = models.Room.bulkCreate([
     {
@@ -45,13 +45,13 @@ function createData ({models}) {
       capacity: 6,
       floor: 3
     }
-  ]);
+  ])
 
-  const HOUR = 60 * 60 * 1000;
-  let now = new Date();
-  let oneHourLater = new Date(now.getTime() + HOUR);
-  let twoHoursLater = new Date(oneHourLater.getTime() + HOUR);
-  let threeHoursLater = new Date(twoHoursLater.getTime() + HOUR);
+  const HOUR = 60 * 60 * 1000
+  let now = new Date()
+  let oneHourLater = new Date(now.getTime() + HOUR)
+  let twoHoursLater = new Date(oneHourLater.getTime() + HOUR)
+  let threeHoursLater = new Date(twoHoursLater.getTime() + HOUR)
 
   let eventsPromise = models.Event.bulkCreate([
     {
@@ -69,7 +69,7 @@ function createData ({models}) {
       dateStart: threeHoursLater,
       dateEnd: twoHoursLater
     }
-  ]);
+  ])
 
   Promise.all([usersPromise, roomsPromise, eventsPromise])
     .then(() => Promise.all([
@@ -78,18 +78,18 @@ function createData ({models}) {
       models.Event.findAll()
     ]))
     .then(function ([users, rooms, events]) {
-      let promises = [];
-      promises.push(events[0].setRoom(rooms[0]));
-      promises.push(events[1].setRoom(rooms[1]));
-      promises.push(events[2].setRoom(rooms[2]));
+      let promises = []
+      promises.push(events[0].setRoom(rooms[0]))
+      promises.push(events[1].setRoom(rooms[1]))
+      promises.push(events[2].setRoom(rooms[2]))
 
-      promises.push(events[0].setUsers([users[0], users[1]]));
-      promises.push(events[1].setUsers([users[1], users[2]]));
-      promises.push(events[2].setUsers([users[0], users[2]]));
+      promises.push(events[0].setUsers([users[0], users[1]]))
+      promises.push(events[1].setUsers([users[1], users[2]]))
+      promises.push(events[2].setUsers([users[0], users[2]]))
 
-      return Promise.all(promises);
-    });
+      return Promise.all(promises)
+    })
 }
 
 connectSequelize()
-  .then(createData);
+  .then(createData)

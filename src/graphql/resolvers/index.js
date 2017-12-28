@@ -1,7 +1,7 @@
-const GraphQLDate = require('graphql-date');
+const GraphQLDate = require('graphql-date')
 
-const query = require('./query');
-const mutation = require('./mutation');
+const query = require('./query')
+const mutation = require('./mutation')
 
 module.exports = function resolvers () {
   return {
@@ -11,13 +11,13 @@ module.exports = function resolvers () {
 
     Event: {
       users (event) {
-        event.getUsers();
+        event.getUsers()
       },
       room (event) {
-        event.getRoom();
+        event.getRoom()
       }
     },
 
     Date: GraphQLDate
-  };
-};
+  }
+}

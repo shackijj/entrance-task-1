@@ -1,20 +1,20 @@
-const {expect} = require('chai');
+const {expect} = require('chai')
 
-const {start, stop, runQuery} = require('../server');
+const {start, stop, runQuery} = require('../src/server')
 
 describe('Mutation', () => {
   describe('#createUser', () => {
-    let server;
+    let server
 
     before(() => {
       return start().then((instance) => {
-        server = instance;
-      });
-    });
-    
+        server = instance
+      })
+    })
+
     after(() => {
-      return stop(server);
-    });
+      return stop(server)
+    })
 
     it('should create a user', () => {
       return runQuery(server, `mutation {
@@ -23,11 +23,11 @@ describe('Mutation', () => {
         }
       }`).then(({body: {data, errors}}) => {
         expect(data).to.eql({
-            createUser: {
-              login: "testUser"
-            }
-        });
+          createUser: {
+            login: 'testUser'
+          }
+        })
       })
-    });
-  });
-});
+    })
+  })
+})
