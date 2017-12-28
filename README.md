@@ -26,6 +26,11 @@ npm run dev
 npm run reset-db
 ```
 
+I'm a complete beginner in GraphQL. Here are articles and tutorials which I found useful while working on this task:
+- https://www.howtographql.com/
+- https://www.howtographql.com/graphql-js/1-getting-started/
+- https://dev-blog.apollodata.com/designing-graphql-mutations-e09de826ed97
+
 TODO:
 - Logins must be unique
 - Add avatarUrl to UserInput type
