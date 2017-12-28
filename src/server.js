@@ -11,9 +11,7 @@ const connectSequelize = require('./sequelize-connector')
 
 const request = require('request-promise')
 
-const PORT = 3000
-
-function start () {
+function start (port = 3000) {
   return connectSequelize().then(sequelize => {
     const schema = makeExecutableSchema({
       typeDefs,
@@ -32,7 +30,7 @@ function start () {
     }))
 
     return new Promise((resolve, reject) => {
-      const server = app.listen(PORT, (err) => {
+      const server = app.listen(port, (err) => {
         if (err) {
           reject(err)
         }
@@ -69,8 +67,4 @@ module.exports = {
   start,
   stop,
   runQuery
-}
-
-if (require.main === module) {
-  start()
 }

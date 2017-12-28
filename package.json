@@ -11,8 +11,8 @@
   "scripts": {
     "test": "mocha",
     "reset-db": "rm -f ./db.sqlite3 && node create-mock-data.js",
-    "lint": "eslint /scripts /src /test",
-    "dev": "nodemon server.js"
+    "lint": "eslint /scripts /src /test *.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "express": "^4.15.4",
