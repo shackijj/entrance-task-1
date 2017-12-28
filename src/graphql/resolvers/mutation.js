@@ -4,14 +4,14 @@ module.exports = {
     return User.create(input)
   },
 
-  updateUser (root, { id, input }, {sequelize: {User}}) {
-    return User.findById(id)
+  updateUser (root, { input }, {sequelize: {User}}) {
+    return User.findById(input.id)
       .then(user => {
         return user.update(input)
       })
   },
 
-  removeUser (root, { id }, {sequelize: {User}}) {
+  removeUser (root, { input: {id} }, {sequelize: {User}}) {
     return User.findById(id)
       .then(user => user.destroy())
   },
@@ -21,14 +21,14 @@ module.exports = {
     return Room.create(input)
   },
 
-  updateRoom (root, { id, input }, {sequelize: {Room}}) {
-    return Room.findById(id)
+  updateRoom (root, { input }, {sequelize: {Room}}) {
+    return Room.findById(input.id)
       .then(room => {
         return room.update(input)
       })
   },
 
-  removeRoom (root, { id }, {sequelize: {Room}}) {
+  removeRoom (root, {input: {id}}, {sequelize: {Room}}) {
     return Room.findById(id)
       .then(room => room.destroy())
   },

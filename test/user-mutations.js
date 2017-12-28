@@ -50,7 +50,8 @@ describe('User mutations', () => {
         expect(id).is.a('string')
 
         return runQuery(server, `mutation {
-          updateUser(id: "${id}", input: {
+          updateUser(input: {
+            id: "${id}",
             login: "FooBar",
             homeFloor: 2,
           }) {
@@ -61,6 +62,37 @@ describe('User mutations', () => {
           expect(updateUser).to.eql({
             login: 'FooBar',
             homeFloor: 2
+          })
+        })
+      })
+    })
+    it('should update only "login" field', () => {
+      return runQuery(server, `mutation {
+        createUser(input: {
+          login: "testUser",
+          homeFloor: 3
+        }) {
+          id
+          login
+          homeFloor
+        }
+      }`).then(({body: {data: {createUser: {id, login, homeFloor}}}}) => {
+        expect(login).to.equal('testUser')
+        expect(homeFloor).to.equal(3)
+        expect(id).is.a('string')
+
+        return runQuery(server, `mutation {
+          updateUser(input: {
+            id: "${id}",
+            login: "FooBar",
+          }) {
+            login
+            homeFloor
+          }
+        }`).then(({body: {data: {updateUser}}}) => {
+          expect(updateUser).to.eql({
+            login: 'FooBar',
+            homeFloor: 3
           })
         })
       })
@@ -84,7 +116,9 @@ describe('User mutations', () => {
         expect(id).is.a('string')
 
         return runQuery(server, `mutation {
-          removeUser(id: "${id}") {
+          removeUser(input: {
+            id: "${id}"
+          }) {
             login
             homeFloor
           }

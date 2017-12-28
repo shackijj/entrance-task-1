@@ -60,7 +60,8 @@ describe('Rooms mutations', () => {
         expect(title).to.equal('Foo')
 
         return runQuery(server, `mutation {
-          updateRoom(id: ${id}, input: {
+          updateRoom(input: {
+            id: "${id}",
             title: "Bar",
             capacity: 2,
             floor: 3
@@ -94,7 +95,9 @@ describe('Rooms mutations', () => {
         expect(id).to.be.a('string')
 
         return runQuery(server, `mutation {
-          removeRoom(id: "${id}") {
+          removeRoom(input: {
+            id: "${id}"
+          }) {
             id
           }
         }`).then(({body: {data: {removeRoom: {id}}}}) => {
