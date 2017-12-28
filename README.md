@@ -34,3 +34,8 @@ I'm a complete beginner in GraphQL. Here are articles and tutorials which I foun
 TODO:
 - Logins must be unique
 - Add avatarUrl to UserInput type
+- Why mutation input are not checked before calling .update method?
+    The doc below says that if an object is passed to .update method
+    Sequlize will iterate through each key and call .set for each key-value pair
+    So, I'd be good to check sourcecode about what happens when we pass nullable values
+    http://docs.sequelizejs.com/class/lib/model.js~Model.html#instance-method-set
