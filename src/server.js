@@ -63,8 +63,17 @@ function runQuery ({app}, query) {
   })
 }
 
+function clearDatabase ({sequelize: {models}}) {
+  const promises = Object.entries(models).map(([name, model]) => {
+    return model.destroy({truncate: true})
+  })
+
+  return Promise.all(promises)
+}
+
 module.exports = {
   start,
   stop,
-  runQuery
+  runQuery,
+  clearDatabase
 }
