@@ -9,10 +9,10 @@
     "node": ">=8.4.0"
   },
   "scripts": {
-    "test": "mocha",
+    "test": "npm run lint && mocha",
     "reset-db": "rm -f ./db.sqlite3 && node create-mock-data.js",
     "lint": "eslint /scripts /src /test *.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js --exec 'npm run test && node'"
   },
   "dependencies": {
     "express": "^4.15.4",
