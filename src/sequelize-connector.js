@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize')
-const scheme = require('./models/scheme')
+const scheme = require('./models')
 
 const DB_NAME = 'meeting-rooms'
 const DB_USER = 'admin'
