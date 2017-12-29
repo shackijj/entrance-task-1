@@ -1,3 +1,5 @@
+const {ValidationError} = require('../errors')
+
 module.exports = {
   // User
   createUser (root, { input }, {sequelize: {User}}) {
@@ -36,10 +38,14 @@ module.exports = {
   // Event
   createEvent (root, { input }, {sequelize: {Event, Room}}) {
     const {roomId, usersIds} = input
-    Room.findById(roomId)
+    return Room.findById(roomId)
       .then((room) => {
         if (!room) {
-          throw new Error(`Room with id "${roomId}" was not found`)
+          throw new ValidationError({
+            data: {
+              roomId: `Room with id "${roomId}" was not found`
+            }
+          })
         }
         return Event.create(input)
           .then(event => {
