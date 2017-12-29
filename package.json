@@ -15,8 +15,9 @@
     "dev": "nodemon index.js --exec 'npm run test && node'"
   },
   "dependencies": {
+    "apollo-errors": "^1.5.1",
+    "apollo-server-express": "^1.3.2",
     "express": "^4.15.4",
-    "express-graphql": "^0.6.11",
     "graphql": "^0.11.1",
     "graphql-date": "^1.0.3",
     "graphql-tools": "^1.2.1",
