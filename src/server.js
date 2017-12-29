@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 
 const graphqlHTTP = require('express-graphql')
 const { makeExecutableSchema } = require('graphql-tools')
-
+const formatError = require('./formatError')
 const typeDefs = require('./graphql/typeDefs')
 const resolvers = require('./graphql/resolvers')
 
@@ -24,6 +24,7 @@ function start (port = 3000) {
     app.use('/graphql', graphqlHTTP({
       schema,
       graphiql: true,
+      formatError,
       context: {
         sequelize: sequelize.models
       }

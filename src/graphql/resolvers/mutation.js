@@ -34,13 +34,25 @@ module.exports = {
   },
 
   // Event
-  createEvent (root, { input, usersIds, roomId }, {sequelize: {Event}}) {
-    return Event.create(input)
-      .then(event => {
-        event.setRoom(roomId)
-
-        return event.setUsers(usersIds)
-          .then(() => event)
+  createEvent (root, { input }, {sequelize: {Event, Room}}) {
+    const {roomId, usersIds} = input
+    Room.findById(roomId)
+      .then((room) => {
+        if (!room) {
+          throw new Error(`Room with id "${roomId}" was not found`)
+        }
+        return Event.create(input)
+          .then(event => {
+            event.setRoom(room.roomId)
+            if (usersIds) {
+              return event.setUsers(usersIds)
+                .then(() => {
+                  return event
+                })
+            } else {
+              return event
+            }
+          })
       })
   },
 

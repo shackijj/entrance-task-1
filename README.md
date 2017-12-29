@@ -39,3 +39,5 @@ TODO:
     Sequlize will iterate through each key and call .set for each key-value pair
     So, I'd be good to check sourcecode about what happens when we pass nullable values
     http://docs.sequelizejs.com/class/lib/model.js~Model.html#instance-method-set
+
+- There aren't any safety checks in resolvers. They should be added

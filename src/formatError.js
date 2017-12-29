@@ -1,6 +1,6 @@
-const {formatError} = require('express-graphql')
+const {formatError} = require('graphql')
 
-module.export = (error) => {
+module.exports = error => {
   const data = formatError(error)
   const {originalError} = error
   data.field = originalError && originalError.field

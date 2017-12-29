@@ -45,5 +45,56 @@ describe('Event mutations', () => {
             'Query error: Invalid date')
         })
     })
+
+    it('should create an event', () => {
+      return runQuery(server, `mutation {
+        createRoom(input: {
+          title: "Foo",
+          capacity: 5,
+          floor: 2
+        }) {
+          id
+        }
+      }`).then(({body: {data: {createRoom: {id}}}}) => {
+        console.log(id)
+        return runQuery(server, `mutation {
+            createEvent(input: {
+              title: "Foo",
+              dateStart: "2017-12-29T06:13:17.304Z",
+              dateEnd: "2017-12-29T06:13:18.304Z",
+              roomId: "${id}"
+            }) {
+              title
+              dateStart
+              dateEnd
+            }
+          }`).then(({body: {data: {createEvent}}}) => {
+          expect(createEvent).to.eql({
+            title: 'Foo',
+            dateStart: '2017-12-29T06:13:17.304Z',
+            dateEnd: '2017-12-29T06:13:18.304Z'
+          })
+        })
+      })
+    })
+
+    it('should fail to create an event for an unexsistin room', () => {
+      return runQuery(server, `mutation {
+        createEvent(input: {
+          title: "Foo",
+          dateStart: "2017-12-29T06:13:17.304Z",
+          dateEnd: "2017-12-29T06:13:18.304Z",
+          roomId: "asd"
+        }) {
+          title
+          dateStart
+          dateEnd
+        }
+      }`)
+        .catch(({error: {errors}}) => {
+          expect(errors[0].message).to.equal(
+            'Room with id "Unexpected" was not found')
+        })
+    })
   })
 })
