@@ -30,10 +30,11 @@ I'm a complete beginner in GraphQL. Here are articles and tutorials which I foun
 - https://www.howtographql.com/
 - https://www.howtographql.com/graphql-js/1-getting-started/
 - https://dev-blog.apollodata.com/designing-graphql-mutations-e09de826ed97
+- https://medium.com/@tarkus/validation-and-user-errors-in-graphql-mutations-39ca79cd00bf
+- https://www.youtube.com/watch?v=xaorvBjCE7A
 
 TODO:
 - Logins must be unique
-- Add avatarUrl to UserInput type
 - Why mutation input are not checked before calling .update method?
     The doc below says that if an object is passed to .update method
     Sequlize will iterate through each key and call .set for each key-value pair
@@ -41,3 +42,4 @@ TODO:
     http://docs.sequelizejs.com/class/lib/model.js~Model.html#instance-method-set
 
 - There aren't any safety checks in resolvers. They should be added
+- Datebase errros must not be exposed to end users. Use concept from https://www.npmjs.com/package/apollo-resolvers
