@@ -1,8 +1,21 @@
-const {formatError} = require('graphql')
+const {formatError, createError} = require('apollo-errors')
+const {GraphQLError} = require('graphql')
+
+const UnknownError = createError('UnknownError', {
+  message: 'An unknown error has occured'
+})
 
 module.exports = error => {
-  const data = formatError(error)
-  const {originalError} = error
-  data.field = originalError && originalError.field
-  return data
+  console.log('HERE', error)
+  let err = formatError(error)
+  if (err instanceof GraphQLError) {
+    err = formatError(new UnknownError({
+      data: {
+        originaMessage: err.message,
+        originalError: err.name
+      }
+    }))
+  }
+
+  return err
 }

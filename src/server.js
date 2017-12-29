@@ -1,34 +1,27 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 
-const graphqlHTTP = require('express-graphql')
-const { makeExecutableSchema } = require('graphql-tools')
+const {graphqlExpress, graphiqlExpress} = require('apollo-server-express')
 const formatError = require('./formatError')
-const typeDefs = require('./graphql/typeDefs')
-const resolvers = require('./graphql/resolvers')
 
+const schema = require('./schema')
 const connectSequelize = require('./sequelize-connector')
-
 const request = require('request-promise')
 
-function start (port = 3000) {
+function start (port = 9000) {
   return connectSequelize().then(sequelize => {
-    const schema = makeExecutableSchema({
-      typeDefs,
-      resolvers: resolvers()
-    })
-
     const app = express()
 
     app.use(bodyParser.json())
-    app.use('/graphql', graphqlHTTP({
+    app.post('/graphql', graphqlExpress({
       schema,
-      graphiql: true,
       formatError,
       context: {
         sequelize: sequelize.models
       }
     }))
+
+    app.get('/graphql', graphiqlExpress({endpointURL: '/graphql'}))
 
     return new Promise((resolve, reject) => {
       const server = app.listen(port, (err) => {

@@ -56,7 +56,6 @@ describe('Event mutations', () => {
           id
         }
       }`).then(({body: {data: {createRoom: {id}}}}) => {
-        console.log(id)
         return runQuery(server, `mutation {
             createEvent(input: {
               title: "Foo",
@@ -84,16 +83,17 @@ describe('Event mutations', () => {
           title: "Foo",
           dateStart: "2017-12-29T06:13:17.304Z",
           dateEnd: "2017-12-29T06:13:18.304Z",
-          roomId: "asd"
+          roomId: "Bar"
         }) {
           title
           dateStart
           dateEnd
         }
       }`)
-        .catch(({error: {errors}}) => {
-          expect(errors[0].message).to.equal(
-            'Room with id "Unexpected" was not found')
+        .then(({body: {errors}}) => {
+          expect(errors[0].data).to.eql({
+            roomId: 'Room with id "Bar" was not found'
+          })
         })
     })
   })
