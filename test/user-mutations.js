@@ -21,7 +21,10 @@ describe('User mutations', () => {
   describe('#createUser', () => {
     it('should create a user.', () => {
       return runQuery(server, `mutation {
-        createUser(input: {login: "testUser"}) {
+        createUser(input: {
+            login: "testUser",
+            avatarUrl: "http://foo.bar"
+          }) {
           id
           login
         }
@@ -38,7 +41,8 @@ describe('User mutations', () => {
       return runQuery(server, `mutation {
         createUser(input: {
           login: "testUser",
-          homeFloor: 3
+          homeFloor: 3,
+          avatarUrl: "http://foo.bar"
         }) {
           id
           login
@@ -70,7 +74,8 @@ describe('User mutations', () => {
       return runQuery(server, `mutation {
         createUser(input: {
           login: "testUser",
-          homeFloor: 3
+          homeFloor: 3,
+          avatarUrl: "http://foo.bar"
         }) {
           id
           login
@@ -104,7 +109,8 @@ describe('User mutations', () => {
       return runQuery(server, `mutation {
         createUser(input: {
           login: "testUser",
-          homeFloor: 3
+          homeFloor: 3,
+          avatarUrl: "http://foo.bar"
         }) {
           id
           login

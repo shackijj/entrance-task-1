@@ -163,6 +163,7 @@ describe('Event mutations', () => {
         createUser(input: {
           login: "FooBar",
           homeFloor: 2,
+          avatarUrl: "http://foo.bar"
         }) {
           id
         }
@@ -211,6 +212,7 @@ describe('Event mutations', () => {
         createUser(input: {
           login: "FooBar",
           homeFloor: 2,
+          avatarUrl: "http://foo.bar"
         }) {
           id
         }
@@ -266,6 +268,7 @@ describe('Event mutations', () => {
         createUser(input: {
           login: "User1",
           homeFloor: 2,
+          avatarUrl: "http://foo.bar"
         }) {
           id
         }
@@ -384,6 +387,7 @@ describe('Event mutations', () => {
         createUser(input: {
           login: "User1",
           homeFloor: 2,
+          avatarUrl: "http://foo.bar"
         }) {
           id
         }
@@ -392,6 +396,7 @@ describe('Event mutations', () => {
         createUser(input: {
           login: "User2",
           homeFloor: 2,
+          avatarUrl: "http://foo.bar"
         }) {
           id
         }
@@ -486,6 +491,7 @@ describe('Event mutations', () => {
         createUser(input: {
           login: "User1",
           homeFloor: 2,
+          avatarUrl: "http://foo.bar"
         }) {
           id
         }
@@ -494,6 +500,7 @@ describe('Event mutations', () => {
         createUser(input: {
           login: "User2",
           homeFloor: 2,
+          avatarUrl: "http://foo.bar"
         }) {
           id
         }

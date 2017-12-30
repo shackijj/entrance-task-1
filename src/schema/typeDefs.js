@@ -15,6 +15,7 @@ type UserRoom {
 
 input CreateUserInput {
     login: String!
+    avatarUrl: String!
     homeFloor: Int
 }
 
