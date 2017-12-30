@@ -43,3 +43,4 @@ TODO:
 
 - There aren't any safety checks in resolvers. They should be added
 - Datebase errros must not be exposed to end users. Use concept from https://www.npmjs.com/package/apollo-resolvers
+- addUserToEvent has no resolver

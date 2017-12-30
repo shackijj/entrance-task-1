@@ -11,11 +11,11 @@ function assertDatesOrder (dateStart, dateEnd) {
   }
 }
 
-function assertEventFound (event, id) {
+function assertTypeFound (event, type, field, id) {
   if (!event) {
     throw new TransactionError({
       data: {
-        id: `Event with "${id}" not found`
+        [field]: `${type} with "${id}" not found`
       }
     })
   }
@@ -114,7 +114,7 @@ module.exports = {
     const {id} = input
     return Event.findById(id)
       .then(event => {
-        assertEventFound(event, id)
+        assertTypeFound(event, 'Event', 'id', id)
         const updatedEvent = Object.assign(event.get(), input)
         assertDatesOrder(updatedEvent.dateStart, updatedEvent.dateEnd)
         return event.update(updatedEvent)
@@ -124,7 +124,7 @@ module.exports = {
   removeUserFromEvent (root, {input: {userId, eventId}}, {sequelize: {Event}}) {
     return Event.findById(eventId)
       .then(event => {
-        assertEventFound(event, eventId)
+        assertTypeFound(event, 'Event', 'eventId', eventId)
         return event.hasUser(userId)
           .then((result) => {
             if (!result) {
@@ -147,10 +147,20 @@ module.exports = {
       })
   },
 
-  changeEventRoom (root, { id, roomId }, {sequelize: {Event}}) {
-    return Event.findById(id)
+  changeEventRoom (root, {input: { eventId, roomId }}, {sequelize: {Event, Room}}) {
+    const eventPromise = Event.findById(eventId)
       .then(event => {
-        event.setRoom(id)
+        assertTypeFound(event, 'Event', 'eventId', eventId)
+        return event
+      })
+    const roomPromise = Room.findById(roomId)
+      .then((room) => {
+        assertTypeFound(room, 'Room', 'roomId', roomId)
+        return room
+      })
+    return Promise.all([eventPromise, roomPromise])
+      .then(([event, room]) => {
+        return event.setRoom(roomId)
       })
   },
 

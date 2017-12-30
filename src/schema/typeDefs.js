@@ -82,6 +82,11 @@ input RemoveUserFromEventInput {
     userId: ID!
 }
 
+input ChangeEventRoomInput {
+    roomId: ID!
+    eventId: ID!
+}
+
 type Query {
   user(id: ID!): User
   users: [User]
@@ -104,7 +109,7 @@ type Mutation {
   updateEvent(input: UpdateEventInput!): Event
   removeUserFromEvent(input: RemoveUserFromEventInput!): Event
   addUserToEvent(id: ID!, userId: ID!): Event
-  changeEventRoom(id: ID!, roomId: ID!): Event
+  changeEventRoom(input: ChangeEventRoomInput!): Event
   removeEvent(id: ID!): Event
 }
 
