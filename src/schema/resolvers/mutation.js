@@ -1,4 +1,5 @@
-const {TransactionError} = require('../errors')
+const {TransactionError, ValidationError} = require('../errors')
+const {Op} = require('sequelize')
 
 module.exports = {
   // User
@@ -36,8 +37,15 @@ module.exports = {
   },
 
   // Event
-  createEvent (root, { input }, {sequelize: {Event, Room}}) {
-    const {roomId, usersIds} = input
+  createEvent (root, { input }, {sequelize: {Event, Room, User}}) {
+    const {roomId, userIds, dateStart, dateEnd} = input
+    if (dateEnd.getTime() < dateStart.getTime()) {
+      throw new ValidationError({
+        data: {
+          dateStart: 'dateStart should be earlier that dateEnd'
+        }
+      })
+    }
     return Room.findById(roomId)
       .then((room) => {
         if (!room) {
@@ -47,18 +55,43 @@ module.exports = {
             }
           })
         }
-        return Event.create(input)
-          .then(event => {
-            event.setRoom(room.roomId)
-            if (usersIds) {
-              return event.setUsers(usersIds)
-                .then(() => {
-                  return event
-                })
-            } else {
-              return event
+      })
+      .then(() => {
+        if (!userIds) {
+          return
+        }
+        return User.findAndCountAll({
+          attributes: ['id'],
+          where: {
+            id: {
+              [Op.or]: userIds
+            }
+          }
+        }).then((result) => {
+          if (result && result.count === userIds.length) {
+            return
+          }
+          throw new TransactionError({
+            data: {
+              userIds: 'User(s) was not found'
             }
           })
+        })
+      })
+      .then(() => {
+        return Event.create(input)
+      })
+      .then(event => {
+        return event.setRoom(roomId)
+      })
+      .then(event => {
+        if (userIds) {
+          return event.setUsers(userIds)
+            .then(() => {
+              return event
+            })
+        }
+        return event
       })
   },
 
