@@ -70,6 +70,12 @@ input CreateEventInput {
     userIds: [ID!]
 }
 
+input UpdateEventInput {
+    id: ID!
+    title: String
+    dateStart: Date
+    dateEnd: Date
+}
 input EventInput {
     title: String!
     dateStart: Date!
@@ -95,7 +101,7 @@ type Mutation {
   removeRoom(input: RemoveRoomInput!): Room
 
   createEvent(input: CreateEventInput!): Event
-  updateEvent(id: ID!, input: EventInput!): Event
+  updateEvent(input: UpdateEventInput!): Event
   removeUserFromEvent(id: ID!, userId: ID!): Event
   addUserToEvent(id: ID!, userId: ID!): Event
   changeEventRoom(id: ID!, roomId: ID!): Event

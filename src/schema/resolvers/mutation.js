@@ -67,16 +67,17 @@ module.exports = {
               [Op.or]: userIds
             }
           }
-        }).then((result) => {
-          if (result && result.count === userIds.length) {
-            return
-          }
-          throw new TransactionError({
-            data: {
-              userIds: 'User(s) was not found'
-            }
-          })
         })
+          .then((result) => {
+            if (result && result.count === userIds.length) {
+              return
+            }
+            throw new TransactionError({
+              data: {
+                userIds: 'User(s) was not found'
+              }
+            })
+          })
       })
       .then(() => {
         return Event.create(input)
@@ -95,7 +96,8 @@ module.exports = {
       })
   },
 
-  updateEvent (root, { id, input }, {sequelize: {Event}}) {
+  updateEvent (root, {input}, {sequelize: {Event}}) {
+    const {id} = input
     return Event.findById(id)
       .then(event => {
         return event.update(input)
