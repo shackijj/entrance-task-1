@@ -1,6 +1,26 @@
 const {TransactionError, ValidationError} = require('../errors')
 const {Op} = require('sequelize')
 
+function assertDatesOrder (dateStart, dateEnd) {
+  if (dateEnd.getTime() < dateStart.getTime()) {
+    throw new ValidationError({
+      data: {
+        dateStart: 'dateStart should be earlier that dateEnd'
+      }
+    })
+  }
+}
+
+function assertEventFound (event, id) {
+  if (!event) {
+    throw new TransactionError({
+      data: {
+        id: `Event with "${id}" not found`
+      }
+    })
+  }
+}
+
 module.exports = {
   // User
   createUser (root, { input }, {sequelize: {User}}) {
@@ -39,13 +59,7 @@ module.exports = {
   // Event
   createEvent (root, { input }, {sequelize: {Event, Room, User}}) {
     const {roomId, userIds, dateStart, dateEnd} = input
-    if (dateEnd.getTime() < dateStart.getTime()) {
-      throw new ValidationError({
-        data: {
-          dateStart: 'dateStart should be earlier that dateEnd'
-        }
-      })
-    }
+    assertDatesOrder(dateStart, dateEnd)
     return Room.findById(roomId)
       .then((room) => {
         if (!room) {
@@ -100,15 +114,36 @@ module.exports = {
     const {id} = input
     return Event.findById(id)
       .then(event => {
-        return event.update(input)
+        assertEventFound(event, id)
+        const updatedEvent = Object.assign(event.get(), input)
+        assertDatesOrder(updatedEvent.dateStart, updatedEvent.dateEnd)
+        return event.update(updatedEvent)
       })
   },
 
-  removeUserFromEvent (root, { id, userId }, {sequelize: {Event}}) {
-    return Event.findById(id)
+  removeUserFromEvent (root, {input: {userId, eventId}}, {sequelize: {Event}}) {
+    return Event.findById(eventId)
       .then(event => {
-        event.removeUser(userId)
-        return event
+        assertEventFound(event, eventId)
+        return event.hasUser(userId)
+          .then((result) => {
+            if (!result) {
+              throw new TransactionError({
+                data: {
+                  userId: `Event is not associated with user which has id "Unexpected"`
+                }
+              })
+            }
+            return event
+          })
+          .then((event) => {
+            return event.removeUser(userId)
+          })
+          .then((result) => {
+            if (result) {
+              return event
+            }
+          })
       })
   },
 

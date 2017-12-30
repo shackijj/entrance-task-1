@@ -247,10 +247,128 @@ describe('Event mutations', () => {
         })
     })
   })
-  describe('#updateRoom', () => {
+
+  describe('#updateEvent', () => {
+    let roomId
+    let userId
+    let eventId
+    before(() => {
+      const roomPromise = runQuery(server, `mutation {
+        createRoom(input: {
+          title: "Zoo",
+          capacity: 5,
+          floor: 2
+        }) {
+          id
+        }
+      }`)
+      const user1Promise = runQuery(server, `mutation {
+        createUser(input: {
+          login: "User1",
+          homeFloor: 2,
+        }) {
+          id
+        }
+      }`)
+      return Promise.all([roomPromise, user1Promise])
+        .then(([
+          {body: {data: {createRoom: {id}}}},
+          {body: {data: {createUser: {id: uId}}}}
+        ]) => {
+          roomId = id
+          userId = uId
+
+          return runQuery(server, `mutation {
+            createEvent(input: {
+              title: "Foo",
+              dateStart: "2017-12-29T06:13:17.304Z",
+              dateEnd: "2017-12-29T06:13:18.304Z",
+              roomId: "${roomId}"
+              userIds: ["${userId}"]
+            }) {
+              id
+            }
+          }`)
+            .then(({body: {data: {createEvent: {id}}}}) => {
+              eventId = id
+            })
+        })
+    })
+
+    it('should update an event by given id', () => {
+      return runQuery(server, `mutation {
+        updateEvent(input: {
+          id: "${eventId}",
+          title: "Bar",
+          dateStart: "2017-12-30T06:13:17.304Z",
+          dateEnd: "2017-12-30T06:13:18.304Z",
+        }) {
+          title
+          dateStart
+          dateEnd
+        }
+      }`)
+        .then(({body: {data: {updateEvent}}}) => {
+          expect(updateEvent).to.eql({
+            title: 'Bar',
+            dateStart: '2017-12-30T06:13:17.304Z',
+            dateEnd: '2017-12-30T06:13:18.304Z'
+          })
+        })
+    })
+
+    it('should not update an event by with dateEnd earlier that dateStart', () => {
+      return runQuery(server, `mutation {
+        updateEvent(input: {
+          id: "${eventId}",
+          title: "Bar",
+          dateStart: "2017-12-30T06:13:17.304Z",
+          dateEnd: "2016-12-30T06:13:18.304Z",
+        }) {
+          title
+          dateStart
+          dateEnd
+        }
+      }`)
+        .then(({body: {errors}}) => {
+          expect(errors[0].name).to.eql(
+            'ValidationError')
+          expect(errors[0].message).to.eql(
+            'input data is not valid')
+          expect(errors[0].data).to.eql({
+            dateStart: 'dateStart should be earlier that dateEnd'
+          })
+        })
+    })
+
+    it('should not update an unexisted event', () => {
+      return runQuery(server, `mutation {
+        updateEvent(input: {
+          id: "Baz",
+          title: "Bar",
+          dateStart: "2017-12-30T06:13:17.304Z",
+          dateEnd: "2016-12-30T06:13:18.304Z",
+        }) {
+          title
+          dateStart
+          dateEnd
+        }
+      }`)
+        .then(({body: {errors}}) => {
+          expect(errors.length).to.equal(1)
+          expect(errors[0].name).to.eql(
+            'TransactionError')
+          expect(errors[0].data).to.eql({
+            id: `Event with "Baz" not found`
+          })
+        })
+    })
+  })
+
+  describe('#removeUserFromEvent', () => {
     let roomId
     let user1Id
-    // let user2Id
+    let user2Id
     let eventId
     before(() => {
       const roomPromise = runQuery(server, `mutation {
@@ -286,7 +404,7 @@ describe('Event mutations', () => {
         ]) => {
           roomId = id
           user1Id = u1Id
-          // user2Id = u2Id
+          user2Id = u2Id
 
           return runQuery(server, `mutation {
             createEvent(input: {
@@ -294,7 +412,7 @@ describe('Event mutations', () => {
               dateStart: "2017-12-29T06:13:17.304Z",
               dateEnd: "2017-12-29T06:13:18.304Z",
               roomId: "${roomId}"
-              userIds: [${user1Id}]
+              userIds: ["${user1Id}", "${user2Id}"]
             }) {
               id
             }
@@ -305,24 +423,45 @@ describe('Event mutations', () => {
         })
     })
 
-    it('should update an event by given id', () => {
+    it('should remove given user from an event', () => {
       return runQuery(server, `mutation {
-        updateEvent(input: {
-          id: "${eventId}",
-          title: "Bar",
-          dateStart: "2017-12-30T06:13:17.304Z",
-          dateEnd: "2017-12-30T06:13:18.304Z",
+        removeUserFromEvent(input: {
+          eventId: "${eventId}",
+          userId: "${user1Id}"
         }) {
-          title
-          dateStart
-          dateEnd
+          users {
+            login
+          }
         }
       }`)
-        .then(({body: {data: {updateEvent}}}) => {
-          expect(updateEvent).to.eql({
-            title: 'Bar',
-            dateStart: '2017-12-30T06:13:17.304Z',
-            dateEnd: '2017-12-30T06:13:18.304Z'
+        .then(({body: {data: {removeUserFromEvent}}}) => {
+          expect(removeUserFromEvent).to.eql({
+            users: [
+              {
+                login: 'User2'
+              }
+            ]
+          })
+        })
+    })
+
+    it('should fail to remove unbound user from an event', () => {
+      return runQuery(server, `mutation {
+        removeUserFromEvent(input: {
+          eventId: "${eventId}",
+          userId: "Unexpected"
+        }) {
+          users {
+            login
+          }
+        }
+      }`)
+        .then(({body: {data: {removeUserFromEvent}, errors}}) => {
+          expect(removeUserFromEvent).to.equal(null)
+          expect(errors.length).to.equal(1)
+          expect(errors[0].name).to.equal('TransactionError')
+          expect(errors[0].data).to.eql({
+            userId: `Event is not associated with user which has id "Unexpected"`
           })
         })
     })

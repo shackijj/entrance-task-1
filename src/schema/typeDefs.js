@@ -76,10 +76,10 @@ input UpdateEventInput {
     dateStart: Date
     dateEnd: Date
 }
-input EventInput {
-    title: String!
-    dateStart: Date!
-    dateEnd: Date!
+
+input RemoveUserFromEventInput {
+    eventId: ID!
+    userId: ID!
 }
 
 type Query {
@@ -102,7 +102,7 @@ type Mutation {
 
   createEvent(input: CreateEventInput!): Event
   updateEvent(input: UpdateEventInput!): Event
-  removeUserFromEvent(id: ID!, userId: ID!): Event
+  removeUserFromEvent(input: RemoveUserFromEventInput!): Event
   addUserToEvent(id: ID!, userId: ID!): Event
   changeEventRoom(id: ID!, roomId: ID!): Event
   removeEvent(id: ID!): Event
