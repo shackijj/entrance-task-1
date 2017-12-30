@@ -167,7 +167,7 @@ module.exports = {
       })
   },
 
-  changeEventRoom (root, {input: { eventId, roomId }}, {sequelize: {Event, Room}}) {
+  changeEventRoom (root, {input: {eventId, roomId}}, {sequelize: {Event, Room}}) {
     const eventPromise = Event.findById(eventId)
       .then(event => {
         assertTypeFound(event, 'Event', 'eventId', eventId)
@@ -184,8 +184,11 @@ module.exports = {
       })
   },
 
-  removeEvent (root, { id }, {sequelize: {Event}}) {
+  removeEvent (root, {input: {id}}, {sequelize: {Event}}) {
     return Event.findById(id)
-      .then(event => event.destroy())
+      .then(event => {
+        assertTypeFound(event, 'Event', 'id', id)
+        return event.destroy()
+      })
   }
 }

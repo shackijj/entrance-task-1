@@ -101,6 +101,10 @@ input AddUserToEventInput {
     eventId: ID!
 }
 
+input RemoveEventInput {
+    id: ID!
+}
+
 type Mutation {
   createUser(input: CreateUserInput!): User
   updateUser(input: UpdateUserInput!): User
@@ -115,7 +119,7 @@ type Mutation {
   removeUserFromEvent(input: RemoveUserFromEventInput!): Event
   addUserToEvent(input: AddUserToEventInput!): Event
   changeEventRoom(input: ChangeEventRoomInput!): Event
-  removeEvent(id: ID!): Event
+  removeEvent(input: RemoveEventInput): Event
 }
 
 union SearchResult = User | Event | Room
