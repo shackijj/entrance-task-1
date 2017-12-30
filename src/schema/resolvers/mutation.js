@@ -147,6 +147,26 @@ module.exports = {
       })
   },
 
+  addUserToEvent (root, {input: {userId, eventId}}, {sequelize: {Event, User}}) {
+    const eventPromise = Event.findById(eventId)
+      .then(event => {
+        assertTypeFound(event, 'Event', 'eventId', eventId)
+        return event
+      })
+    const userPromise = User.findById(userId)
+      .then((room) => {
+        assertTypeFound(userPromise, 'User', 'userId', userId)
+        return room
+      })
+    return Promise.all([eventPromise, userPromise])
+      .then(([event, room]) => {
+        return event.addUser(userId)
+          .then(() => {
+            return event
+          })
+      })
+  },
+
   changeEventRoom (root, {input: { eventId, roomId }}, {sequelize: {Event, Room}}) {
     const eventPromise = Event.findById(eventId)
       .then(event => {
