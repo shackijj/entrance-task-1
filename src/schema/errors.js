@@ -1,9 +1,9 @@
 const {createError} = require('apollo-errors')
 
-const ValidationError = createError('ValidationError', {
-  message: 'Request has invalid fields'
+const TransactionError = createError('TransactionError', {
+  message: 'An error has occured during transcation'
 })
 
 module.exports = {
-  ValidationError
+  TransactionError
 }

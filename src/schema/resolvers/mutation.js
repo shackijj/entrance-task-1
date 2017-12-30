@@ -1,4 +1,4 @@
-const {ValidationError} = require('../errors')
+const {TransactionError} = require('../errors')
 
 module.exports = {
   // User
@@ -41,7 +41,7 @@ module.exports = {
     return Room.findById(roomId)
       .then((room) => {
         if (!room) {
-          throw new ValidationError({
+          throw new TransactionError({
             data: {
               roomId: `Room with id "${roomId}" was not found`
             }

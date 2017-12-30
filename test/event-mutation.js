@@ -22,27 +22,31 @@ describe('Event mutations', () => {
       return runQuery(server, `mutation {
         createEvent(input: {
           title: "Foo",
-          dateStart: "2017-12-29T03:10:001Z",
+          dateStart: "2017-12-29T06:13:17.304Z",
           dateEnd: "asd",
           roomId: "Unexpected"
         })
-      }`).catch(({error: {errors}}) => {
-        expect(errors[0].message).to.equal(
-          'Query error: Invalid date')
+      }`).catch(({error: {errors}, statusCode}) => {
+        expect(statusCode).to.equal(400)
+        expect(errors.length).to.equal(2)
+        expect(errors[1].data.originalMessage).to.equal(
+          'Expected type Date!, found "asd"; Query error: Invalid date')
       })
     })
     it('should fail to parse the dateEnd', () => {
       return runQuery(server, `mutation {
         createEvent(input: {
           title: "Foo",
-          dateStart: "asd",
-          dateEnd: "2017-12-29T03:10:005Z",
+          dateStart: "2017-12-29T06:13:17.304Z",
+          dateEnd: "asd",
           roomId: "Unexpected"
         })
       }`)
-        .catch(({error: {errors}}) => {
-          expect(errors[0].message).to.equal(
-            'Query error: Invalid date')
+        .catch(({error: {errors}, statusCode}) => {
+          expect(statusCode).to.equal(400)
+          expect(errors.length).to.equal(2)
+          expect(errors[1].data.originalMessage).to.equal(
+            'Expected type Date!, found "asd"; Query error: Invalid date')
         })
     })
 
@@ -91,6 +95,10 @@ describe('Event mutations', () => {
         }
       }`)
         .then(({body: {errors}}) => {
+          expect(errors[0].name).to.eql(
+            'TransactionError')
+          expect(errors[0].message).to.eql(
+            'An error has occured during transcation')
           expect(errors[0].data).to.eql({
             roomId: 'Room with id "Bar" was not found'
           })

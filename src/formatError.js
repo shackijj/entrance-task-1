@@ -6,12 +6,11 @@ const UnknownError = createError('UnknownError', {
 })
 
 module.exports = error => {
-  console.log('HERE', error)
   let err = formatError(error)
   if (err instanceof GraphQLError) {
     err = formatError(new UnknownError({
       data: {
-        originaMessage: err.message,
+        originalMessage: err.message,
         originalError: err.name
       }
     }))
