@@ -59,7 +59,7 @@ type Event {
     title: String!
     dateStart: Date!
     dateEnd: Date!
-    users: [User]
+    users: [User!]
     room: Room
 }
 
@@ -90,7 +90,7 @@ input ChangeEventRoomInput {
 
 type Query {
   user(id: ID!): User
-  users: [User]
+  users: [User!]
   event(id: ID!): Event
   events: [Event]
   room(id: ID!): Room
