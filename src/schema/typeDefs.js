@@ -123,8 +123,6 @@ type Mutation {
   removeEvent(input: RemoveEventInput): Event
 }
 
-union SearchResult = User | Event | Room
-
 schema {
   query: Query
   mutation: Mutation
