@@ -33,6 +33,17 @@ I'm a complete beginner in GraphQL. Here are articles and tutorials which I foun
 - https://medium.com/@tarkus/validation-and-user-errors-in-graphql-mutations-39ca79cd00bf
 - https://www.youtube.com/watch?v=xaorvBjCE7A
 
+I tried to follow TDD aproach while working on this task. So, errors, which were made
+by devs, became obvious when added a new releated test.
+
+I moved from graphql-express to apollo-express-server because of more clearer documentation
+on error's customization.
+
+DONE:
+- There aren't any safety checks in resolvers. They should be added
+- addUserToEvent has no resolver
+- Datebase errros must not be exposed to end users. Use concept from                                https://www.npmjs.com/package/apollo-resolvers
+
 TODO:
 - Logins must be unique
 - Why mutation input are not checked before calling .update method?
@@ -40,7 +51,4 @@ TODO:
     Sequlize will iterate through each key and call .set for each key-value pair
     So, I'd be good to check sourcecode about what happens when we pass nullable values
     http://docs.sequelizejs.com/class/lib/model.js~Model.html#instance-method-set
-
-- There aren't any safety checks in resolvers. They should be added
-- Datebase errros must not be exposed to end users. Use concept from https://www.npmjs.com/package/apollo-resolvers
-- addUserToEvent has no resolver
+- Why stacktraced do appear while tests are runned? Is it OK?
