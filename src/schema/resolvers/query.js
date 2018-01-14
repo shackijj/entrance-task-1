@@ -9,12 +9,12 @@ module.exports = {
     return User.findById(id)
   },
   users (root, args, {sequelize: {User}}) {
-    return User.findAll({})
+    return User.findAll()
   },
   room (root, { id }, {sequelize: {Room}}) {
     return Room.findById(id)
   },
   rooms (root, args, {sequelize: {Room}}) {
-    return Room.findAll({ offset: 1 })
+    return Room.findAll()
   }
 }
