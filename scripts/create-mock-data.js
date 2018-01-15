@@ -1,4 +1,4 @@
-const connectSequelize = require('./sequelize-connector')
+const connectSequelize = require('../src/sequelize-connector')
 
 function createData ({models}) {
   let usersPromise = models.User.bulkCreate([
