@@ -88,16 +88,7 @@ describe('#addUserToEvent', () => {
     }`)
       .then(({body: {data: {addUserToEvent}, errors}}) => {
         expect(errors).to.equal(undefined)
-        expect(addUserToEvent).to.eql({
-          users: [
-            {
-              login: 'User1'
-            },
-            {
-              login: 'User2'
-            }
-          ]
-        })
+        expect(addUserToEvent.users.length).to.equal(2)
       })
   })
 
