@@ -20,11 +20,13 @@ npm run reset-db
 
 Я перенес приложение с graphql-express на apollo-express-server по причине наличия хорошей документации.
 
-TODO:
-- Logins must be unique
+Что нужно сделать:
+- Логины уникальными
+- Убрать лишние стэктрейсы из тестов
+- Добавить тип Floor и поменять hoomFloor и floor у комнат на него.
 - Why mutation input are not checked before calling .update method?
     The doc below says that if an object is passed to .update method
     Sequlize will iterate through each key and call .set for each key-value pair
     So, I'd be good to check sourcecode about what happens when we pass nullable values
     http://docs.sequelizejs.com/class/lib/model.js~Model.html#instance-method-set
-- Why stacktraced do appear while tests are runned? Is it OK?
+
