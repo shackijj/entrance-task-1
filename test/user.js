@@ -34,13 +34,12 @@ describe('#user', () => {
     return runQuery(server, `{
       user(id: "${user1.id}") {
         login
-        homeFloor
         avatarUrl
       }
     }`)
       .then(({body: {data: {user}, errors}}) => {
         expect(errors).to.equal(undefined)
-        expect(user).to.eql({ login: 'user1', homeFloor: 1, avatarUrl: 'http://user1.com' })
+        expect(user).to.eql({ login: 'user1', avatarUrl: 'http://user1.com' })
       })
   })
 
@@ -48,7 +47,6 @@ describe('#user', () => {
     return runQuery(server, `{
       user(id: "Unknown") {
         login
-        homeFloor
         avatarUrl
       }
     }`)

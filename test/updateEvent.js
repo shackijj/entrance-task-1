@@ -22,31 +22,18 @@ describe('#updateEvent', () => {
   })
 
   before(() => {
-    const roomPromise = runQuery(server, `mutation {
-      createRoom(input: {
-        title: "Zoo",
-        capacity: 5,
-        floor: 2
-      }) {
-        id
-      }
-    }`)
-    const user1Promise = runQuery(server, `mutation {
-      createUser(input: {
-        login: "User1",
-        homeFloor: 2,
-        avatarUrl: "http://foo.bar"
-      }) {
-        id
-      }
-    }`)
-    return Promise.all([roomPromise, user1Promise])
-      .then(([
-        {body: {data: {createRoom: {id}}}},
-        {body: {data: {createUser: {id: uId}}}}
-      ]) => {
-        roomId = id
-        userId = uId
+    const {sequelize: {models}} = server
+    const roomsPromise = models.Room.bulkCreate([
+      { title: 'Zoo', capacity: 1 }
+    ])
+    const usersPromise = models.User.bulkCreate([
+      { login: 'user1', avatarUrl: 'http://user1.com' }
+    ])
+
+    return Promise.all([roomsPromise, usersPromise])
+      .then(([rooms, users]) => {
+        roomId = rooms[0].id
+        userId = users[0].id
 
         return runQuery(server, `mutation {
           createEvent(input: {
@@ -129,7 +116,7 @@ describe('#updateEvent', () => {
         expect(errors[0].name).to.eql(
           'TransactionError')
         expect(errors[0].data).to.eql({
-          id: `Event with "Baz" not found`
+          id: `Event with id "Baz" not found`
         })
       })
   })

@@ -6,6 +6,7 @@ describe('#changeEventRoom', () => {
   let room1Id
   let room2Id
   let eventId
+  let floor
 
   before(() => {
     return start()
@@ -14,6 +15,15 @@ describe('#changeEventRoom', () => {
         return instace
       })
       .then(clearDatabase)
+      .then(() => {
+        const {sequelize: {models}} = server
+        return models.Floor.bulkCreate([
+          { floor: 1 }
+        ])
+      })
+      .then((floors) => {
+        floor = floors[0]
+      })
   })
 
   after(() => {
@@ -25,7 +35,7 @@ describe('#changeEventRoom', () => {
       createRoom(input: {
         title: "Zoo",
         capacity: 5,
-        floor: 2
+        floor: ${floor.id}
       }) {
         id
       }
@@ -34,7 +44,7 @@ describe('#changeEventRoom', () => {
       createRoom(input: {
         title: "Boo",
         capacity: 5,
-        floor: 2
+        floor: ${floor.id}
       }) {
         id
       }
@@ -79,7 +89,7 @@ describe('#changeEventRoom', () => {
         expect(errors.length).to.equal(1)
         expect(errors[0].name).to.equal('TransactionError')
         expect(errors[0].data).to.eql({
-          roomId: `Room with "Unexpected" not found`
+          roomId: `Room with id "Unexpected" not found`
         })
       })
   })
@@ -100,7 +110,7 @@ describe('#changeEventRoom', () => {
         expect(errors.length).to.equal(1)
         expect(errors[0].name).to.equal('TransactionError')
         expect(errors[0].data).to.eql({
-          eventId: `Event with "Unexpected" not found`
+          eventId: `Event with id "Unexpected" not found`
         })
       })
   })

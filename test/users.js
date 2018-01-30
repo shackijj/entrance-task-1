@@ -14,8 +14,8 @@ describe('#users', () => {
       .then(() => {
         const {sequelize: {models}} = server
         return models.User.bulkCreate([
-          { login: 'user1', homeFloor: 1, avatarUrl: 'http://user1.com' },
-          { login: 'user2', homeFloor: 2, avatarUrl: 'http://user2.com' }
+          { login: 'user1', avatarUrl: 'http://user1.com' },
+          { login: 'user2', avatarUrl: 'http://user2.com' }
         ])
       })
   })
@@ -28,7 +28,6 @@ describe('#users', () => {
     return runQuery(server, `{
       users {
         login
-        homeFloor
         avatarUrl
       }
     }`)
@@ -36,8 +35,8 @@ describe('#users', () => {
         const {body: {data: {users}, errors}} = result
         expect(errors).to.equal(undefined)
         expect(users).to.eql([
-          { login: 'user1', homeFloor: 1, avatarUrl: 'http://user1.com' },
-          { login: 'user2', homeFloor: 2, avatarUrl: 'http://user2.com' }
+          { login: 'user1', avatarUrl: 'http://user1.com' },
+          { login: 'user2', avatarUrl: 'http://user2.com' }
         ])
       })
   })

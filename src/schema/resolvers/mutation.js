@@ -11,27 +11,44 @@ function assertDatesOrder (dateStart, dateEnd) {
   }
 }
 
-function assertTypeFound (event, type, field, id) {
-  if (!event) {
-    throw new TransactionError({
-      data: {
-        [field]: `${type} with "${id}" not found`
+function assertTypeFound (model, type, field, id) {
+  return model.findById(id)
+    .then((result) => {
+      if (!result) {
+        throw new TransactionError({
+          data: {
+            [field]: `${type} with id "${id}" not found`
+          }
+        })
       }
+      return result
     })
-  }
 }
 
 module.exports = {
   // User
-  createUser (root, { input }, {sequelize: {User}}) {
-    return User.create(input)
+  createUser (root, { input }, {sequelize: {User, Floor}}) {
+    const { floor } = input
+    return assertTypeFound(Floor, 'Floor', 'floor', floor)
+      .then((floor) => {
+        return User.create(input)
+          .then((user) => user.setFloor(floor))
+      })
   },
 
-  updateUser (root, { input }, {sequelize: {User}}) {
-    return User.findById(input.id)
+  updateUser (root, { input }, {sequelize: {User, Floor}}) {
+    const { id, floor } = input
+    return assertTypeFound(User, 'User', 'id', id)
       .then(user => {
-        return user.update(input)
+        if (floor) {
+          return assertTypeFound(Floor, 'Floor', 'floor', floor)
+            .then((floor) => {
+              return user.setFloor(floor)
+            })
+        }
+        return user
       })
+      .then((user) => user.update(input))
   },
 
   removeUser (root, { input: {id} }, {sequelize: {User}}) {
@@ -40,8 +57,11 @@ module.exports = {
   },
 
   // Room
-  createRoom (root, { input }, {sequelize: {Room}}) {
-    return Room.create(input)
+  createRoom (root, { input }, {sequelize: {Room, Floor}}) {
+    const {floor} = input
+    return assertTypeFound(Floor, 'Floor', 'floor', floor)
+      .then(() => Room.create(input))
+      .then(room => room.setFloor(floor))
   },
 
   updateRoom (root, { input }, {sequelize: {Room}}) {
@@ -60,16 +80,7 @@ module.exports = {
   createEvent (root, { input }, {sequelize: {Event, Room, User}}) {
     const {roomId, userIds, dateStart, dateEnd} = input
     assertDatesOrder(dateStart, dateEnd)
-    return Room.findById(roomId)
-      .then((room) => {
-        if (!room) {
-          throw new TransactionError({
-            data: {
-              roomId: `Room with id "${roomId}" was not found`
-            }
-          })
-        }
-      })
+    return assertTypeFound(Room, 'Room', 'roomId', roomId)
       .then(() => {
         if (!userIds) {
           return
@@ -112,9 +123,8 @@ module.exports = {
 
   updateEvent (root, {input}, {sequelize: {Event}}) {
     const {id} = input
-    return Event.findById(id)
-      .then(event => {
-        assertTypeFound(event, 'Event', 'id', id)
+    return assertTypeFound(Event, 'Event', 'id', id)
+      .then((event) => {
         const updatedEvent = Object.assign(event.get(), input)
         assertDatesOrder(updatedEvent.dateStart, updatedEvent.dateEnd)
         return event.update(updatedEvent)
@@ -122,9 +132,8 @@ module.exports = {
   },
 
   removeUserFromEvent (root, {input: {userId, eventId}}, {sequelize: {Event}}) {
-    return Event.findById(eventId)
+    return assertTypeFound(Event, 'Event', 'eventId', eventId)
       .then(event => {
-        assertTypeFound(event, 'Event', 'eventId', eventId)
         return event.hasUser(userId)
           .then((result) => {
             if (!result) {
@@ -148,16 +157,9 @@ module.exports = {
   },
 
   addUserToEvent (root, {input: {userId, eventId}}, {sequelize: {Event, User}}) {
-    const eventPromise = Event.findById(eventId)
-      .then(event => {
-        assertTypeFound(event, 'Event', 'eventId', eventId)
-        return event
-      })
-    const userPromise = User.findById(userId)
-      .then((room) => {
-        assertTypeFound(userPromise, 'User', 'userId', userId)
-        return room
-      })
+    const eventPromise = assertTypeFound(Event, 'Event', 'eventId', eventId)
+    const userPromise = assertTypeFound(User, 'User', 'userId', userId)
+
     return Promise.all([eventPromise, userPromise])
       .then(([event, room]) => {
         return event.addUser(userId)
@@ -168,16 +170,9 @@ module.exports = {
   },
 
   changeEventRoom (root, {input: {eventId, roomId}}, {sequelize: {Event, Room}}) {
-    const eventPromise = Event.findById(eventId)
-      .then(event => {
-        assertTypeFound(event, 'Event', 'eventId', eventId)
-        return event
-      })
-    const roomPromise = Room.findById(roomId)
-      .then((room) => {
-        assertTypeFound(room, 'Room', 'roomId', roomId)
-        return room
-      })
+    const eventPromise = assertTypeFound(Event, 'Event', 'eventId', eventId)
+    const roomPromise = assertTypeFound(Room, 'Room', 'roomId', roomId)
+
     return Promise.all([eventPromise, roomPromise])
       .then(([event, room]) => {
         return event.setRoom(roomId)
@@ -185,10 +180,7 @@ module.exports = {
   },
 
   removeEvent (root, {input: {id}}, {sequelize: {Event}}) {
-    return Event.findById(id)
-      .then(event => {
-        assertTypeFound(event, 'Event', 'id', id)
-        return event.destroy()
-      })
+    return assertTypeFound(Event, 'Event', 'id', id)
+      .then(event => event.destroy())
   }
 }

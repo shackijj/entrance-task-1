@@ -20,15 +20,21 @@ describe('#removeEvent', () => {
   })
 
   before(() => {
-    return runQuery(server, `mutation {
-      createRoom(input: {
-        title: "Zoo",
-        capacity: 5,
-        floor: 2
-      }) {
-        id
-      }
-    }`)
+    const {sequelize: {models}} = server
+    return models.Floor.bulkCreate([
+      { floor: 1 }
+    ])
+      .then((floors) => {
+        return runQuery(server, `mutation {
+          createRoom(input: {
+            title: "Zoo",
+            capacity: 5,
+            floor: ${floors[0].id}
+          }) {
+            id
+          }
+        }`)
+      })
       .then(({body: {data: {createRoom: {id}}}}) => {
         roomId = id
 
@@ -62,7 +68,7 @@ describe('#removeEvent', () => {
         expect(errors.length).to.equal(1)
         expect(errors[0].name).to.equal('TransactionError')
         expect(errors[0].data).to.eql({
-          id: `Event with "Unexpected" not found`
+          id: `Event with id "Unexpected" not found`
         })
       })
   })

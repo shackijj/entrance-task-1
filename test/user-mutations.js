@@ -4,6 +4,7 @@ const {start, stop, runQuery, clearDatabase} = require('../src/server')
 
 describe('User mutations', () => {
   let server
+  let floors
 
   before(() => {
     return start()
@@ -12,6 +13,16 @@ describe('User mutations', () => {
         return instace
       })
       .then(clearDatabase)
+      .then(() => {
+        const {sequelize: {models}} = server
+        return models.Floor.bulkCreate([
+          { floor: 1 },
+          { floor: 2 }
+        ])
+      })
+      .then((result) => {
+        floors = result
+      })
   })
 
   after(() => {
@@ -24,6 +35,7 @@ describe('User mutations', () => {
         createUser(input: {
             login: "testUser",
             avatarUrl: "http://foo.bar"
+            floor: ${floors[0].id}
           }) {
           id
           login
@@ -41,31 +53,35 @@ describe('User mutations', () => {
       return runQuery(server, `mutation {
         createUser(input: {
           login: "testUser",
-          homeFloor: 3,
+          floor: ${floors[0].id},
           avatarUrl: "http://foo.bar"
         }) {
           id
           login
-          homeFloor
+          floor {
+            floor
+          }
         }
-      }`).then(({body: {data: {createUser: {id, login, homeFloor}}}}) => {
+      }`).then(({body: {data: {createUser: {id, login, floor}}}}) => {
         expect(login).to.equal('testUser')
-        expect(homeFloor).to.equal(3)
+        expect(floor).to.eql({floor: 1})
         expect(id).is.a('string')
 
         return runQuery(server, `mutation {
           updateUser(input: {
             id: "${id}",
             login: "FooBar",
-            homeFloor: 2,
+            floor: ${floors[1].id},
           }) {
             login
-            homeFloor
+            floor {
+              floor
+            }
           }
         }`).then(({body: {data: {updateUser}}}) => {
           expect(updateUser).to.eql({
             login: 'FooBar',
-            homeFloor: 2
+            floor: { floor: 2 }
           })
         })
       })
@@ -74,16 +90,14 @@ describe('User mutations', () => {
       return runQuery(server, `mutation {
         createUser(input: {
           login: "testUser",
-          homeFloor: 3,
+          floor: ${floors[0].id},
           avatarUrl: "http://foo.bar"
         }) {
           id
           login
-          homeFloor
         }
-      }`).then(({body: {data: {createUser: {id, login, homeFloor}}}}) => {
+      }`).then(({body: {data: {createUser: {id, login, floor}}}}) => {
         expect(login).to.equal('testUser')
-        expect(homeFloor).to.equal(3)
         expect(id).is.a('string')
 
         return runQuery(server, `mutation {
@@ -92,12 +106,10 @@ describe('User mutations', () => {
             login: "FooBar",
           }) {
             login
-            homeFloor
           }
         }`).then(({body: {data: {updateUser}}}) => {
           expect(updateUser).to.eql({
-            login: 'FooBar',
-            homeFloor: 3
+            login: 'FooBar'
           })
         })
       })
@@ -109,16 +121,14 @@ describe('User mutations', () => {
       return runQuery(server, `mutation {
         createUser(input: {
           login: "testUser",
-          homeFloor: 3,
+          floor: ${floors[0].id}
           avatarUrl: "http://foo.bar"
         }) {
           id
           login
-          homeFloor
         }
       }`).then(({body: {data: {createUser: {id, login, homeFloor}}}}) => {
         expect(login).to.equal('testUser')
-        expect(homeFloor).to.equal(3)
         expect(id).is.a('string')
 
         return runQuery(server, `mutation {
@@ -126,12 +136,10 @@ describe('User mutations', () => {
             id: "${id}"
           }) {
             login
-            homeFloor
           }
         }`).then(({body: {data: {removeUser}}}) => {
           expect(removeUser).to.eql({
-            login: 'testUser',
-            homeFloor: 3
+            login: 'testUser'
           })
         })
       })

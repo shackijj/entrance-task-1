@@ -4,7 +4,7 @@ scalar Date
 type User {
     id: ID!
     login: String!
-    homeFloor: Int
+    floor: Floor!
     avatarUrl: String!
 }
 
@@ -16,13 +16,13 @@ type UserRoom {
 input CreateUserInput {
     login: String!
     avatarUrl: String!
-    homeFloor: Int
+    floor: ID!
 }
 
 input UpdateUserInput {
     id: ID!
     login: String
-    homeFloor: Int
+    floor: ID
     avatarUrl: String
 }
 
@@ -34,20 +34,21 @@ type Room {
     id: ID!
     title: String!
     capacity: Int!
-    floor: Int!
+    events(filter: EventsFilter, sort: Sort): [Event!]
+    floor: Floor!
 }
 
 input CreateRoomInput {
     title: String!
     capacity: Int!
-    floor: Int!
+    floor: ID!
 }
 
 input UpdateRoomInput {
     id: ID!
     title: String
     capacity: Int
-    floor: Int
+    floor: ID
 }
 
 input RemoveRoomInput {
@@ -60,7 +61,11 @@ type Event {
     dateStart: Date!
     dateEnd: Date!
     users: [User!]
-    room: Room
+    room: Room!
+}
+
+input EventsFilter {
+    onDate: Date
 }
 
 input CreateEventInput {
@@ -88,13 +93,30 @@ input ChangeEventRoomInput {
     eventId: ID!
 }
 
+input Sort {
+    field: String!
+    order: SortTypes
+}
+
+type Floor {
+    id: ID!
+    floor: Int!
+    rooms: [Room!]
+}
+
+enum SortTypes {
+  ASC
+  DESC
+}
+
 type Query {
   user(id: ID!): User
   users: [User!]
   event(id: ID!): Event
-  events: [Event]
+  events(filter: EventsFilter, sort: Sort): [Event!]
   room(id: ID!): Room
-  rooms: [Room]
+  rooms: [Room!]
+  floors(order: SortTypes): [Floor]
 }
 
 input AddUserToEventInput {

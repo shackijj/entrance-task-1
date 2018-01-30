@@ -3,7 +3,7 @@ const {expect} = require('chai')
 
 describe('#createEvent', () => {
   let server
-
+  let floor
   before(() => {
     return start()
       .then((instace) => {
@@ -11,6 +11,15 @@ describe('#createEvent', () => {
         return instace
       })
       .then(clearDatabase)
+      .then(() => {
+        const {sequelize: {models}} = server
+        return models.Floor.bulkCreate([
+          { floor: 1 }
+        ])
+      })
+      .then((floors) => {
+        floor = floors[0]
+      })
   })
 
   after(() => {
@@ -54,7 +63,7 @@ describe('#createEvent', () => {
       createRoom(input: {
         title: "Foo",
         capacity: 5,
-        floor: 2
+        floor: ${floor.id}
       }) {
         id
       }
@@ -71,7 +80,9 @@ describe('#createEvent', () => {
             dateEnd
             room {
               title,
-              floor,
+              floor {
+                floor
+              },
               capacity
             }
           }
@@ -83,7 +94,7 @@ describe('#createEvent', () => {
           room: {
             title: 'Foo',
             capacity: 5,
-            floor: 2
+            floor: {floor: 1}
           }
         })
       })
@@ -109,7 +120,7 @@ describe('#createEvent', () => {
         expect(errors[0].message).to.eql(
           'An error has occured during transaction')
         expect(errors[0].data).to.eql({
-          roomId: 'Room with id "Bar" was not found'
+          roomId: 'Room with id "Bar" not found'
         })
       })
   })
@@ -119,7 +130,7 @@ describe('#createEvent', () => {
       createRoom(input: {
         title: "Foo",
         capacity: 5,
-        floor: 2
+        floor: ${floor.id}
       }) {
         id
       }
@@ -153,7 +164,7 @@ describe('#createEvent', () => {
       createRoom(input: {
         title: "Zoo",
         capacity: 5,
-        floor: 2
+        floor: ${floor.id}
       }) {
         id
       }
@@ -161,7 +172,7 @@ describe('#createEvent', () => {
     const userPromise = runQuery(server, `mutation {
       createUser(input: {
         login: "FooBar",
-        homeFloor: 2,
+        floor: ${floor.id}
         avatarUrl: "http://foo.bar"
       }) {
         id
@@ -202,7 +213,7 @@ describe('#createEvent', () => {
       createRoom(input: {
         title: "Zoo",
         capacity: 5,
-        floor: 2
+        floor: ${floor.id}
       }) {
         id
       }
@@ -210,7 +221,7 @@ describe('#createEvent', () => {
     const userPromise = runQuery(server, `mutation {
       createUser(input: {
         login: "FooBar",
-        homeFloor: 2,
+        floor: ${floor.id}
         avatarUrl: "http://foo.bar"
       }) {
         id

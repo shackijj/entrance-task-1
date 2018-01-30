@@ -7,6 +7,7 @@ describe('#removeUserFromEvent', () => {
   let user2Id
   let eventId
   let server
+  let floor
 
   before(() => {
     return start()
@@ -15,6 +16,15 @@ describe('#removeUserFromEvent', () => {
         return instace
       })
       .then(clearDatabase)
+      .then(() => {
+        const {sequelize: {models}} = server
+        return models.Floor.bulkCreate([
+          { floor: 1 }
+        ])
+      })
+      .then((floors) => {
+        floor = floors[0]
+      })
   })
 
   after(() => {
@@ -25,7 +35,7 @@ describe('#removeUserFromEvent', () => {
       createRoom(input: {
         title: "Zoo",
         capacity: 5,
-        floor: 2
+        floor: ${floor.id}
       }) {
         id
       }
@@ -33,7 +43,7 @@ describe('#removeUserFromEvent', () => {
     const user1Promise = runQuery(server, `mutation {
       createUser(input: {
         login: "User1",
-        homeFloor: 2,
+        floor: ${floor.id},
         avatarUrl: "http://foo.bar"
       }) {
         id
@@ -42,7 +52,7 @@ describe('#removeUserFromEvent', () => {
     const user2Promise = runQuery(server, `mutation {
       createUser(input: {
         login: "User2",
-        homeFloor: 2,
+        floor: ${floor.id},
         avatarUrl: "http://foo.bar"
       }) {
         id

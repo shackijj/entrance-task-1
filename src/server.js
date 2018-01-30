@@ -12,6 +12,16 @@ function start (port = 9000) {
   return connectSequelize().then(sequelize => {
     const app = express()
 
+    /**
+     * That's a workaround for development
+     */
+    app.use((req, res, next) => {
+      res.set({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*'
+      })
+      next()
+    })
     app.use(bodyParser.json())
     app.post('/graphql', graphqlExpress({
       schema,

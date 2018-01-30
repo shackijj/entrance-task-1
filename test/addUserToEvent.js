@@ -7,6 +7,7 @@ describe('#addUserToEvent', () => {
   let user1Id
   let user2Id
   let eventId
+  let floor
   before(() => {
     return start()
       .then((instace) => {
@@ -14,6 +15,15 @@ describe('#addUserToEvent', () => {
         return instace
       })
       .then(clearDatabase)
+      .then(() => {
+        const {sequelize: {models}} = server
+        return models.Floor.bulkCreate([
+          { floor: 1 }
+        ])
+      })
+      .then((floors) => {
+        floor = floors[0]
+      })
   })
 
   after(() => {
@@ -25,7 +35,7 @@ describe('#addUserToEvent', () => {
       createRoom(input: {
         title: "Zoo",
         capacity: 5,
-        floor: 2
+        floor: ${floor.id}
       }) {
         id
       }
@@ -33,7 +43,7 @@ describe('#addUserToEvent', () => {
     const user1Promise = runQuery(server, `mutation {
       createUser(input: {
         login: "User1",
-        homeFloor: 2,
+        floor: ${floor.id},
         avatarUrl: "http://foo.bar"
       }) {
         id
@@ -42,7 +52,7 @@ describe('#addUserToEvent', () => {
     const user2Promise = runQuery(server, `mutation {
       createUser(input: {
         login: "User2",
-        homeFloor: 2,
+        floor: ${floor.id},
         avatarUrl: "http://foo.bar"
       }) {
         id
@@ -88,7 +98,7 @@ describe('#addUserToEvent', () => {
     }`)
       .then(({body: {data: {addUserToEvent}, errors}}) => {
         expect(errors).to.equal(undefined)
-        expect(addUserToEvent.users.length).to.equal(2)
+        expect(addUserToEvent.users.length).to.eql(2)
       })
   })
 
@@ -108,7 +118,7 @@ describe('#addUserToEvent', () => {
         expect(errors.length).to.equal(1)
         expect(errors[0].name).to.equal('TransactionError')
         expect(errors[0].data).to.eql({
-          eventId: `Event with "Unexpected" not found`
+          eventId: `Event with id "Unexpected" not found`
         })
       })
   })
@@ -129,7 +139,7 @@ describe('#addUserToEvent', () => {
         expect(errors.length).to.equal(1)
         expect(errors[0].name).to.equal('TransactionError')
         expect(errors[0].data).to.eql({
-          eventId: `Event with "Unexpected" not found`
+          eventId: `Event with id "Unexpected" not found`
         })
       })
   })
