@@ -14,8 +14,8 @@ describe('#users', () => {
       .then(() => {
         const {sequelize: {models}} = server
         return models.User.bulkCreate([
-          { login: 'user1', avatarUrl: 'http://user1.com' },
-          { login: 'user2', avatarUrl: 'http://user2.com' }
+          { firstName: 'Джон', secondName: 'Дон', login: 'user1', avatarUrl: 'http://user1.com' },
+          { firstName: 'Клон', secondName: 'Дон', login: 'user2', avatarUrl: 'http://user2.com' }
         ])
       })
   })
@@ -37,6 +37,22 @@ describe('#users', () => {
         expect(users).to.eql([
           { login: 'user1', avatarUrl: 'http://user1.com' },
           { login: 'user2', avatarUrl: 'http://user2.com' }
+        ])
+      })
+  })
+
+  it('should get users containing ', () => {
+    return runQuery(server, `{
+      users(filter: "Джон") {
+        login
+        avatarUrl
+      }
+    }`)
+      .then((result) => {
+        const {body: {data: {users}, errors}} = result
+        expect(errors).to.equal(undefined)
+        expect(users).to.eql([
+          { login: 'user1', avatarUrl: 'http://user1.com' }
         ])
       })
   })

@@ -3,6 +3,8 @@ scalar Date
 
 type User {
     id: ID!
+    firstName: String!
+    secondName: String!
     login: String!
     floor: Floor!
     avatarUrl: String!
@@ -109,9 +111,11 @@ enum SortTypes {
   DESC
 }
 
+
+
 type Query {
   user(id: ID!): User
-  users: [User!]
+  users(filter: String): [User!]
   event(id: ID!): Event
   events(filter: EventsFilter, sort: Sort): [Event!]
   room(id: ID!): Room

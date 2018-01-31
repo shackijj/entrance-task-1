@@ -1,5 +1,6 @@
 const { DEFAULT_ORDER } = require('../../constants')
 const onDateFilter = require('../../utils/onDateFilter')
+const { Op } = require('sequelize')
 
 module.exports = {
   event (root, { id }, {sequelize: {Event}}) {
@@ -17,8 +18,24 @@ module.exports = {
   user (root, { id }, {sequelize: {User}}) {
     return User.findById(id)
   },
-  users (root, args, {sequelize: {User}}) {
-    return User.findAll()
+  users (root, {filter}, {sequelize: {User}}) {
+    let where = {}
+    if (filter) {
+      const like = `%${filter}%`
+      where.$or = [
+        {
+          firstName: {
+            [Op.like]: like
+          }
+        },
+        {
+          secondName: {
+            [Op.like]: like
+          }
+        }
+      ]
+    }
+    return User.findAll({ where })
   },
   room (root, { id }, {sequelize: {Room}}) {
     return Room.findById(id)

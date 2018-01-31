@@ -3,7 +3,9 @@ const Sequelize = require('sequelize')
 module.exports = function (sequelize) {
   const User = sequelize.define('User', {
     login: Sequelize.STRING,
-    avatarUrl: Sequelize.STRING
+    avatarUrl: Sequelize.STRING,
+    firstName: Sequelize.STRING,
+    secondName: Sequelize.STRING
   })
 
   const Room = sequelize.define('Room', {
